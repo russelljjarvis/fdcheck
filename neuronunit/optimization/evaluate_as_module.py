@@ -10,13 +10,14 @@ import neuronunit
 print(neuronunit.models.__file__)
 from neuronunit.models.reduced import ReducedModel
 from ipyparallel import depend, require, dependent
-
-'''
-from neuronunit.optimization import get_neab
 import ipyparallel as ipp
+
 rc = ipp.Client(profile='default')
 rc[:].use_cloudpickle()
 dview = rc[:]
+'''
+from neuronunit.optimization import get_neab
+import ipyparallel as ipp
 model = ReducedModel(get_neab.LEMS_MODEL_PATH,name='vanilla',backend='NEURON')
 '''
 class Individual(object):

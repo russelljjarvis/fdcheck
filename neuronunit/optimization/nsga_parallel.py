@@ -18,6 +18,13 @@ rc = ipp.Client(profile='default')
 rc[:].use_cloudpickle()
 dview = rc[:]
 
+# scatter 'id', so id=0,1,2 on engines 0,1,2
+dview.scatter('id', rc.ids, flatten=True)
+print("Engine IDs: ", dview['id'])
+# create a Reference to `id`. This will be a different value on each engine
+ref = ipp.Reference('id')
+
+
 from ipyparallel import depend, require, dependent
 # Import get_neab has to happen exactly here. It has to be called only on
 # controller (rank0, it has)
@@ -55,7 +62,6 @@ def bind_score_to_dtc(dtc):
     import numpy as np
     from neuronunit.optimization import get_neab
 
-
     model = ReducedModel(get_neab.LEMS_MODEL_PATH,name=str('vanilla'),backend='NEURONMemory')
 
 
@@ -66,14 +72,12 @@ def bind_score_to_dtc(dtc):
         return dtc
 
     for k,t in enumerate(get_neab.tests):
-        if k!=0 and k!=2:
-            if 'passive' not in type(t):
-                print(t)
+        if k>0:
+
             t.params = dtc.vtest[k]
             score = t.judge(model,stop_on_error = False, deep_error = False)
             #import pdb; pdb.set_trace()
             dtc.scores[str(t)] = score.sort_key
-            '''
             try:
                 observation = score.observation
                 prediction = score.prediction
@@ -81,7 +85,6 @@ def bind_score_to_dtc(dtc):
                 dtc.differences[str(t)] = delta
             except:
                 pass
-            '''
     return dtc
 
 def evaluate(dtc):
@@ -89,13 +92,13 @@ def evaluate(dtc):
     from neuronunit.optimization import get_neab
     import numpy as np
     fitness = [ -100.0 for i in range(0,8)]
-    for k,t in enumerate(get_neab.tests):
+    for k,t in enumerate(dtc.scores.keys()):
         if dtc.rheobase['value'] > 0.0:
             fitness[k] = dtc.scores[str(t)]
         else:
             fitness[k] = -100.0
 
-    print(fitness)
+    #print(fitness)
     return fitness[0],fitness[1],\
            fitness[2],fitness[3],\
            fitness[4],fitness[5],\
@@ -136,26 +139,27 @@ def update_pop(pop,td):
     update_dtc_pop = evaluate_as_module.update_dtc_pop
     pre_format = evaluate_as_module.pre_format
     dtcpop = list(update_dtc_pop(pop, td))
-    print('a')
+    for d in dtcpop:
+        assert type(d) is not type(None)
     assert len(dtcpop) != 0
-
     dtcpop = list(map(dtc_to_rheo,dtcpop))
-    print('b')
-
+    print('\n\n\n\n\n rheobase complete \n\n\n\n')
+    for d in dtcpop:
+        assert type(d) is not type(None)
     assert len(dtcpop) != 0
-
     dtcpop = list(map(pre_format,dtcpop))
-    print('c')
-
+    print('\n\n\n\n\n preformat complete \n\n\n\n')
+    for d in dtcpop:
+        assert type(d) is not type(None)
     assert len(dtcpop) != 0
+    from neuronunit.optimization.exhaustive_search import parallel_method
+    dtcpop = list(dview.map_sync(parallel_method,dtcpop))
+    print('\n\n\n\n\n score calculation complete \n\n\n\n')
+    #import pdb; pdb.set_trace()
 
-    #assert len(dtcpop) != 0
-    #print('d')
-
-    dtcpop = list(dview.map_sync(bind_score_to_dtc,dtcpop))
     import copy
-    print('e')
-
+    for d in dtcpop:
+        assert type(d) is not type(None)
     assert len(dtcpop) != 0
     return copy.copy(dtcpop)
 
