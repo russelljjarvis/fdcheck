@@ -3,14 +3,13 @@
 ##
 NGEN = 3
 MU = 6; NGEN = 3; CXPB = 0.9
-# about 12, models will be made, excluding rheobase search.
+# about 18, models will be made, excluding rheobase search.
 
 ##
 # Grid search parameters:
 ##
-npoints = 5
-nparams = 2
-# about 2**5=32, or 5**2 =25 models will be made excluding rheobase search models.
+npoints = 3
+nparams = 3
 
 
 

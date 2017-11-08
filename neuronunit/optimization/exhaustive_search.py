@@ -3,10 +3,6 @@ import os
 import quantities as pq
 import numpy as np
 import importlib
-#importlib.machinery
-#import os
-#importlib.machinery.SourceFileLoader('neuronunit', os.getcwd()+str('../'))
-#os.system('ipcluster start -n 8 --profile=default & sleep 25; python stdout_worker.py &')
 import ipyparallel as ipp
 rc = ipp.Client(profile='default')
 rc[:].use_cloudpickle()
@@ -79,14 +75,9 @@ def update_dtc_pop(item_of_iter_list):
     dtc = data_transport_container.DataTC()
     dtc.attrs = item_of_iter_list
     dtc.scores = {}
-
-    #dtc.scores = []
     dtc.rheobase = None
     dtc.evaluated = False
     return dtc
-
-#npoints = 2
-#nparams = 2
 
 def run_grid(npoints,nparams):
     # not all models will produce scores, since models with rheobase <0 are filtered out.
