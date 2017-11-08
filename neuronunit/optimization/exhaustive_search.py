@@ -67,13 +67,14 @@ def parallel_method(dtc):
 
 def dtc_to_rheo(dtc):
     from neuronunit.optimization import get_neab
+    dtc.scores = {}
 
     from neuronunit.models.reduced import ReducedModel
     model = ReducedModel(get_neab.LEMS_MODEL_PATH,name=str('vanilla'),backend='NEURON')
     model.set_attrs(dtc.attrs)
-
-    score = get_neab.tests[0].judge(model,stop_on_error = False, deep_error = True)
-    dtc.scores[str(get_neab.tests[0])] = score.sort_key
+    rbt = get_neab.tests[0]
+    score = rbt.judge(model,stop_on_error = False, deep_error = True)
+    dtc.scores[str(rbt)] = score.sort_key
 
     observation = score.observation
     dtc.rheobase =  score.prediction
