@@ -41,7 +41,7 @@ def min_find(dtcpop):
     for i in dtcpop:
         rt = 0 # running total
         for values in i.scores.values():
-            rt += sqrt(mean(square(list(values)))
+            rt += sqrt(mean(square(list(values))))
         sovg.append(rt)
     dtc = invalid_dtc[np.where(sovg==np.min(sovg))[0][0]]
     return dtc
@@ -52,7 +52,7 @@ def min_max(dtcpop):
     for i in dtcpop:
         rt = 0 # running total
         for values in i.scores.values():
-            rt += sqrt(mean(square(list(values)))
+            rt += sqrt(mean(square(list(values))))
         sovg.append(rt)
     dtc = invalid_dtc[np.where(sovg==np.max(sovg))[0][0]]
     return dtc
