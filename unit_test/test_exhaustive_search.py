@@ -3,10 +3,11 @@
 ##
 NGEN = 2
 MU = 4; NGEN = 3; CXPB = 0.9
-# about 12, models will be made, excluding rheobase search.
+# about 8, models will be made, excluding rheobase search.
 
 ##
 # Grid search parameters:
+# only 5 models, will be made excluding rheobase search
 ##
 npoints = 5
 nparams = 1
@@ -41,27 +42,29 @@ with open('grid_dump.p','wb') as handle:
 grid_lists = pickle.load(open('grid_dump.p','rb'))
 #invalid_dtc, pop, logbook, fitnesses = lists[0],lists[1],lists[2], lists[3]
 
-# This function searches virtual model data containers to find the values with best scores.
 def min_find(dtcpop):
+    # This function searches virtual model data containers to find the values with the best scores.
+
     from numpy import sqrt, mean, square
     import numpy as np
-    sovg=[]
+    sovg = []
     for i in dtcpop:
         rt = 0 # running total
-        for values in i.scores.values():
-            rt += sqrt(mean(square(list(values))))
+        #for values in i.scores.values():
+        rt = sqrt(mean(square(list(i.scores.values()))))
         sovg.append(rt)
     dtc = invalid_dtc[np.where(sovg==np.min(sovg))[0][0]]
     return dtc
-
 def min_max(dtcpop):
+    # This function searches virtual model data containers to find the values with the worst scores.
+
     from numpy import sqrt, mean, square
     import numpy as np
-    sovg=[]
+    sovg = []
     for i in dtcpop:
         rt = 0 # running total
-        for values in i.scores.values():
-            rt += sqrt(mean(square(list(values))))
+        #for values in i.scores.values():
+        rt = sqrt(mean(square(list(i.scores.values()))))
         sovg.append(rt)
     dtc = invalid_dtc[np.where(sovg==np.max(sovg))[0][0]]
     return dtc
@@ -71,8 +74,10 @@ minimagr = min_find(dtcpopg)
 maximagr = min_max(dtcpopg)
 # quantize distance between minimimum error and maximum error.
 quantize_distance = list(np.linspace(minimagr,maximagr,10))
-assert minimaga < quantize_distance[1]
+# check that the nsga error is in the bottom 1/5th of the entire error range.
 
+assert minimaga < quantize_distance[1]
+print(' the nsga error is in the bottom 1/5th of the entire error range',minimaga,quantize_distance[1])
 
 
 print('Report: ')
