@@ -44,11 +44,14 @@ def parallel_method(dtc):
     #try:
     from neuronunit.optimization import get_neab
     tests = get_neab.tests
+    #dtc.cell_name
+    #dtc.current_src_name
+    #model = ReducedModel(get_neab.LEMS_MODEL_PATH,name=str('vanilla'),backend='NEURON',cell_name = dtc.cell_name, current_src_name = dtc.current_src_name)
+
     model = ReducedModel(get_neab.LEMS_MODEL_PATH,name=str('vanilla'),backend='NEURON')
     model.set_attrs(dtc.attrs)
     tests[0].prediction = dtc.rheobase
     model.rheobase = dtc.rheobase['value']
-    scores = []
     from neuronunit.optimization import evaluate_as_module
     dtc = evaluate_as_module.pre_format(dtc)
     for k,t in enumerate(tests):
@@ -63,7 +66,6 @@ def parallel_method(dtc):
     #    return dtc
 
 def dtc_to_rheo(dtc):
-    dtc.scores = {}
     from neuronunit.optimization import get_neab
 
     from neuronunit.models.reduced import ReducedModel
@@ -71,6 +73,7 @@ def dtc_to_rheo(dtc):
     model.set_attrs(dtc.attrs)
 
     score = get_neab.tests[0].judge(model,stop_on_error = False, deep_error = True)
+    dtc.scores[str(get_neab.tests[0])] = score.sort_key
 
     observation = score.observation
     dtc.rheobase =  score.prediction
@@ -81,7 +84,9 @@ def update_dtc_pop(item_of_iter_list):
     from neuronunit.optimization import data_transport_container
     dtc = data_transport_container.DataTC()
     dtc.attrs = item_of_iter_list
-    dtc.scores = []
+    dtc.scores = {}
+
+    #dtc.scores = []
     dtc.rheobase = None
     dtc.evaluated = False
     return dtc
@@ -103,7 +108,6 @@ def run_grid(npoints,nparams):
 
     filtered_dtcpop = list(filter(lambda dtc: dtc.rheobase['value'] > 0.0 , dtcpop))
     print(filtered_dtcpop)
-    #dtcpop = list(map(parallel_method,filtered_dtcpop))
     dtcpop = dview.map(parallel_method,filtered_dtcpop).get()
 
     rc.wait(dtcpop)

@@ -39,6 +39,8 @@ def dtc_to_rheo(dtc):
     model = ReducedModel(get_neab.LEMS_MODEL_PATH,name=str('vanilla'),backend='NEURON')
 
     model.set_attrs(dtc.attrs)
+    #dtc.cell_name = model._backend.cell_name
+    #dtc.current_src_name = model._backend.current_src_name
     dtc.scores = None
     dtc.scores = {}
     dtc.differences = None
@@ -172,7 +174,8 @@ def create_subset(nparams=10):
     reduced_key_list = key_list[0:nparams]
     subset = { k:mp[k] for k in reduced_key_list }
     return subset
-
+'''
+Deprecated
 def main(MU=12, NGEN=4, CXPB=0.9, nparams=10):
     import deap
     import copy
@@ -305,3 +308,4 @@ def main(MU=12, NGEN=4, CXPB=0.9, nparams=10):
                                                             pf_mean))
         if gen==NGEN:
             return difference_progress, fitnesses, pf, logbook, pop, dtcpop, stats, scores
+'''
