@@ -2,14 +2,14 @@
 # GA parameters:
 ##
 NGEN = 3
-MU = 6; NGEN = 3; CXPB = 0.9
+MU = 4; NGEN = 3; CXPB = 0.9
 # about 18, models will be made, excluding rheobase search.
 
 ##
 # Grid search parameters:
 ##
 npoints = 3
-nparams = 3
+nparams = 2
 
 
 
