@@ -1,18 +1,22 @@
 ###
-# GA parameters
-#MU = 12,
+# GA parameters:
+##
 NGEN = 3
-CXPB = 0.9
 MU = 6; NGEN = 3; CXPB = 0.9
+# about 12, models will be made, excluding rheobase search.
+
+##
+# Grid search parameters:
+##
 npoints = 5
 nparams = 2
+# about 2**5=32, or 5**2 =25 models will be made excluding rheobase search models.
+
+
 
 import ipyparallel as ipp
 rc = ipp.Client(profile='default')
-# create client & view
-#rc = ipp.Client()
 from ipyparallel import depend, require, dependent
-
 dview = rc[:]
 
 from neuronunit.optimization.nsga_object import NSGA
@@ -21,12 +25,14 @@ from neuronunit.optimization import exhaustive_search as es
 NSGAO = NSGA()
 NSGAO.setnparams(nparams=nparams)
 invalid_dtc, pop, logbook, fitnesses = NSGAO.main(MU, NGEN)
-
+'''
+uncomment to facilitate checkpointing.
 import pickle
 with open('complete_dump.p','wb') as handle:
    pickle.dump([invalid_dtc, pop, logbook, fitnesses],handle)
 lists = pickle.load(open('complete_dump.p','rb'))
 invalid_dtc, pop, logbook, fitnesses = lists[0],lists[1],lists[2], lists[3]
+'''
 dtcpopg = es.run_grid(npoints,nparams)
 from find_min import min_find
 # This function searches virtual model data containers to find the values with best scores.

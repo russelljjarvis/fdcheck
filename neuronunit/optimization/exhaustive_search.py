@@ -56,29 +56,22 @@ def parallel_method(dtc):
     dtc = evaluate_as_module.pre_format(dtc)
     for k,t in enumerate(tests):
         if k>0 and float(dtc.rheobase['value']) > 0:
-            #print('failed at:')
-            #print(dtc.rheobase,t,k,dtc.vtest[k])
             t.params = dtc.vtest[k]
             score = t.judge(model,stop_on_error = False, deep_error = False)
             dtc.scores[str(t)] = score.sort_key
     return dtc
-    #except:
-    #    return dtc
 
 def dtc_to_rheo(dtc):
     from neuronunit.optimization import get_neab
     dtc.scores = {}
-
     from neuronunit.models.reduced import ReducedModel
     model = ReducedModel(get_neab.LEMS_MODEL_PATH,name=str('vanilla'),backend='NEURON')
     model.set_attrs(dtc.attrs)
     rbt = get_neab.tests[0]
     score = rbt.judge(model,stop_on_error = False, deep_error = True)
     dtc.scores[str(rbt)] = score.sort_key
-
     observation = score.observation
     dtc.rheobase =  score.prediction
-    print('Rheobase finished with value %s' % dtc.rheobase)
     return dtc
 
 def update_dtc_pop(item_of_iter_list):
