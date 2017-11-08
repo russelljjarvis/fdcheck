@@ -24,18 +24,26 @@ from neuronunit.optimization import exhaustive_search as es
 NSGAO = NSGA()
 NSGAO.setnparams(nparams=nparams)
 invalid_dtc, pop, logbook, fitnesses = NSGAO.main(MU, NGEN)
-'''
-uncomment to facilitate checkpointing.
+
+#uncomment to facilitate checkpointing.
 import pickle
-with open('complete_dump.p','wb') as handle:
+with open('ga_dump.p','wb') as handle:
    pickle.dump([invalid_dtc, pop, logbook, fitnesses],handle)
-lists = pickle.load(open('complete_dump.p','rb'))
-invalid_dtc, pop, logbook, fitnesses = lists[0],lists[1],lists[2], lists[3]
-'''
+ga_lists = pickle.load(open('ga_dump.p','rb'))
+#invalid_dtc, pop, logbook, fitnesses = lists[0],lists[1],lists[2], lists[3]
+
 dtcpopg = es.run_grid(npoints,nparams)
+
+#uncomment to facilitate checkpointing.
+import pickle
+with open('grid_dump.p','wb') as handle:
+   pickle.dump(dtcpopg,handle)
+grid_lists = pickle.load(open('grid_dump.p','rb'))
+#invalid_dtc, pop, logbook, fitnesses = lists[0],lists[1],lists[2], lists[3]
 
 # This function searches virtual model data containers to find the values with best scores.
 def min_find(dtcpop):
+    from numpy import sqrt, mean, square
     import numpy as np
     sovg=[]
     for i in dtcpop:
@@ -47,6 +55,7 @@ def min_find(dtcpop):
     return dtc
 
 def min_max(dtcpop):
+    from numpy import sqrt, mean, square
     import numpy as np
     sovg=[]
     for i in dtcpop:
