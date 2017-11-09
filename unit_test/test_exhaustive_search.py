@@ -75,16 +75,26 @@ maximagr = min_max(dtcpopg)
 # quantize distance between minimimum error and maximum error.
 quantize_distance = list(np.linspace(minimagr,maximagr,10))
 # check that the nsga error is in the bottom 1/5th of the entire error range.
+print('Report: ')
 
-assert minimaga < quantize_distance[1]
+print(bool(minimaga < quantize_distance[1]))
 print(' the nsga error is in the bottom 1/5th of the entire error range',minimaga,quantize_distance[1])
 
+print('maximum error:', maximagr)
 
-print('Report: ')
 # This function reports on the deltas brute force obtained versus the GA found attributes.
+from neuronunit.optimization import model_parameters as modelp
+mp = modelp.model_params
 for k,v in minimagr.attrs.items():
+    #hvgrid = np.linspace(np.min(mp[k]),np.max(mp[k]),10)
+    dimension_length = np.max(mp[k]) - np.min(mp[k])
+    solution_distance_in_1D = np.abs(minimaga.attrs[k])-np.abs(float(v))
+    relative_distance = dimension_length/solution_distance_in_1D
     print('the difference between brute force candidates model parameters and the GA\'s model parameters:')
     print(float(minimaga.attrs[k])-float(v),minimaga.attrs[k],v,k)
+    print('the relative distance scaled by the length of the parameter dimension of interest:')
+    print(relative_distance)
+
 print('the difference between the bf error and the GA\'s error:')
 print('grid search:')
 from numpy import square, mean, sqrt
@@ -93,7 +103,6 @@ print(rmsg)
 print('ga:')
 rmsga=sqrt(mean(square(list(minimaga.scores.values()))))
 print(rmsga)
-print('maximum error:', maximagr)
 
 # Two things to find:
 # How close togethor are the model parameters in parameter space (hyper volume), relative to the dimensions of the HV?
